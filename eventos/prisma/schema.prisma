@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Evento {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  data      DateTime
+  local     String
+  descricao String
+  lotes     LoteIngresso[]
+}
+
+model CategoriaIngresso {
+  id    Int     @id @default(autoincrement())
+  tipo  String
+  lotes LoteIngresso[]
+}
+
+model LoteIngresso {
+  id               Int             @id @default(autoincrement())
+  evento           Evento          @relation(fields: [eventoId], references: [id])
+  eventoId         Int
+  categoria        CategoriaIngresso   @relation(fields: [categoriaId], references: [id])
+  categoriaId      Int
+  nome             String
+  ingressos        Ingresso[]
+}
+
+model Ingresso {
+  id            Int       @id @default(autoincrement())
+  lote          LoteIngresso   @relation(fields: [loteId], references: [id])
+  loteId        Int
+  quantidade    Int
+  valor         Float
+  cliente       Cliente?    @relation(fields: [clienteId], references: [id])
+  clienteId     Int?
+}
+
+model Cliente {
+  id         Int        @id @default(autoincrement())
+  nome       String
+  email      String
+  ingressos  Ingresso[]
+}
